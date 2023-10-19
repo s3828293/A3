@@ -1,0 +1,365 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>Lake Nagambie Land Fishing Guide（UPPER SECTION）</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+	<script src="https://cdn.staticfile.org/jquery/3.6.1/jquery.min.js"></script>
+	<!-- The layout and typography of the whole page, they are more basic things, I do not really like a map guide type of web page to do too fancy, because it actually has a certain utility. -->
+	<style>
+		body {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 100vw;
+			height: 100vh;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+		}
+
+		.map {
+			width: 100vw;
+			height: 100vh;
+			position: fixed;
+			inset: 0;
+		}
+
+		/* .map img {
+			max-width: 100vw;
+			max-height: 100vh;
+			user-select: none;
+		} */
+
+		.map .point {
+			display: block;
+			position: absolute;
+			width: 30px;
+			height: 30px;
+			border-radius: 50%;
+			border: 3px solid #59b6da;
+			background: url(static/point.jpg) center/cover no-repeat;
+			box-sizing: border-box;
+			margin: -15px -4px;
+			transition: .3s;
+		}
+
+		.map a:hover {
+			transform: scale(1.1);
+		}
+
+		.coco-modal {
+			width: 800px !important;
+		}
+
+		.hide {
+			display: none;
+		}
+
+		.startBox {
+			position: fixed;
+			inset: 0;
+			z-index: 2;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: #333;
+			font-size: 4vw;
+			font-weight: bold;
+			backdrop-filter: blur(10px);
+			cursor: pointer;
+			user-select: none;
+			z-index: 999;
+		}
+
+		.popup .img {
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			margin: 20px 0;
+		}
+
+		.popup {
+			padding: 20px 0;
+			font-size: 14px;
+		}
+
+		.popup img {
+			width: 50%;
+			max-width: 100%;
+		}
+
+		.popup .line {
+			margin: 40px 0;
+			width: 100%;
+			height: 1px;
+			background: #ccc;
+		}
+
+		.popup .title {
+			font-size: 22px;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- I chose to have the user click through to the actual fishing guide on the first screen after loading the page, so that the user doesn't feel so lost. -->
+	<div class="startBox">Click to explore lake nagambie</div>
+
+	<!-- The entire webpage is actually based on a large map, which can cover the whole world at most, but our content is only the upper half of lake nagambie. The API of China's Baidu Map is used here, which will be explained below. -->
+	<div class="map" id="map">
+		
+	</div>
+
+	<!-- For the fish-shaped dots I set up on the lake after clicking on them, a pop-up window will appear that will contain some information. The popup will be fixed in the center for easy access by the user. -->
+	<div class="popup hide coco-hidden" id="popup"></div>
+
+	<!-- The pop-ups that users click through to contain pictures and information about the fish commonly found in specific fishing spots are taken from the official Victorian Fishing website.Also the picture of the little fish representing the spot is from a copyright free website. 
+    https://www.vecteezy.com/vector-art/8518557-vector-graphic-of-fish-logo-design-template -->
+	<div class="content hide">
+		<div id="c1">
+			<div class="img"><img src="static/1.jpg" /></div>
+			<p class="title"><b>Autralian bass</b></p>
+			<p>Minimum legal size:27 cm</p>
+			<p>Bag limit :Lake Bullen Merri: a combined total of 5 for one or more species of Australian bass, estuary
+				perch and hybrid species.</p>
+			<p>All other Victorian Waters: a combined total of 5 fish (of which no more than 2 can be Australian bass)
+			</p>
+		</div>
+		<div id="c2">
+			<div class="img"><img src="static/2.jpg" /></div>
+			<p class="title"><b>Brown trout</b></p>
+			<p>Name of waterway/specific section:Rivers and streams (general)</p>
+			<p>Minimum legal size:No minimum for trout and salmonids</p>
+			<p>Bag limit:5 salmonids per day, of which no more than 2 fish can exceed 35cm</p>
+			<p>Closed season:Yes. During the closed season, anglers must not take or possess salmonids in, or next to
+				Victorian rivers, river sections and streams.</p>
+			<p>The 2023 trout and salmon closed season on rivers and streams is from Tuesday 13 June until Friday 1
+				September inclusive. The first open day is on Saturday 2 September.</p>
+		</div>
+		<div id="c3">
+			<div class="img"><img src="static/3.jpg" /></div>
+			<p class="title"><b>Estuary perch</b></p>
+			<p>Minimum legal size:27 cm</p>
+			<p>Bag limit :Lake Bullen Merri: a combined total of 5 for one or more species of Australian bass, estuary
+				perch and hybrid species.</p>
+			<p>All other Victorian Waters: a combined total of 5 fish (of which no more than 2 can be Australian bass)
+			</p>
+		</div>
+		<div id="c4">
+			<div class="img"><img src="static/4.jpg" /></div>
+			<p class="title"><b>European carp</b></p>
+			<p>Minimum legal size:No minimum</p>
+			<p>Bag limit :No limit, must not be returned to the water alive given noxious status.</p>
+		</div>
+		<div id="c5">
+			<div class="img"><img src="static/5.jpg" /></div>
+			<p class="title"><b>Golden perch(yellowbelly)</b></p>
+			<p>Minimum legal size:30 cm</p>
+			<p>Bag limit :5</p>
+		</div>
+		<div id="c6">
+			<div class="img"><img src="static/6.jpg" /></div>
+			<p class="title"><b>Murray cod</b></p>
+			<p>Legal size:Minimum: 55cm</p>
+			<p>Maximum: 75cm</p>
+			<p>Bag limit Rivers: 1</p>
+			<p>In specified lakes and impoundments (see below): 2</p>
+			<p>Urban lakes (see below, and a full list of urban lakes here): 2</p>
+			<p>Closed season 1 September to 30 November inclusive.</p>
+			<p>The closed season does not apply in the following waters:</p>
+			<p>Lake Eildon</p>
+			<p>Waters south of the Great Dividing Range, except the Yarra River</p>
+			<p>Waters of the Wimmera and Millicent basins, except the Wimmera River</p>
+		</div>
+		<div id="c7">
+			<div class="img"><img src="static/7.jpg" /></div>
+			<p class="title"><b>Rainbow trout</b></p>
+			<p>Name of waterway/specific section:Rivers and streams (general)</p>
+			<p>Minimum legal size:No minimum for trout and salmonids</p>
+			<p>Bag limit:5 salmonids per day, of which no more than 2 fish can exceed 35cm</p>
+			<p>Closed season:Yes. During the closed season, anglers must not take or possess salmonids in, or next to
+				Victorian rivers, river sections and streams.</p>
+			<p>The 2023 trout and salmon closed season on rivers and streams is from Tuesday 13 June until Friday 1
+				September inclusive. The first open day is on Saturday 2 September.</p>
+		</div>
+		<div id="c8">
+			<div class="img"><img src="static/8.jpg" /></div>
+			<p class="title"><b>Redfin</b></p>
+			<p>Minimum legal size:No minimum</p>
+			<p>Bag limit:No limit.</p>
+		</div>
+	</div>
+
+	<!-- I set up a voice that welcomes the user after entering the page so they know exactly what they're doing. -->
+	<audio class="hide" src="static/start.m4a" id="startSound"></audio>
+
+	<!-- In order to enhance some sound effects, I also added the sound effect of fish jumping out of the water after clicking on each spot to introduce it to the users. -->
+	<audio class="hide" src="static/click.mp3" id="clickSound"></audio>
+
+	<!-- Through JavaScript to set up the script so that the pop-up window can be displayed through the click, which is an important part of the interaction through the click -->
+	<script src="static/coco-modal.min.js"></script>
+
+	<!--An API consists of a combination of tools, definitions, and protocols for integrating applications and services. With these kinds of interfaces, I don't have to keep building new connectivity infrastructure to allow my products and services to communicate with other products and services. That means I don't have to rebuild complex maps, I'm taking the api that China's Baidu Maps makes publicly available to the general public directly here-->
+	<script src="https://api.map.baidu.com/api?type=webgl&v=1.0&ak=2ppUVioLobNrzwbyMobxX45Gp1tSOK8x"></script>
+
+	<!-- script -->
+	<script>
+		// The first screen that comes up when users run the site, I tried to give it something like a cover to make the whole site seem less abrupt.
+		coco.init()
+
+		// click to enter.
+		$(".startBox").click(function () {
+			// After clicking on the initial screen, let the phrase "Click to explore lake nagambie" slowly disappear and then display the map
+			$(this).fadeOut()
+			// After clicking on the initial screen, play the welcome voice.
+			document.getElementById("startSound").play()
+		})
+
+		// Each spot has different fish. This is for the convenience of making these different fish and some of their information appear on different spots where I want them to appear.
+		const data = [
+			[6, 8, 4],
+			[8, 5, 7],
+			[8, 5],
+			[8, 6],
+			[8, 4, 7],
+			[8, 4],
+			[1, 2, 7, 8, 4, 5, 6],
+			[8, 3, 6],
+			[8, 4, 5]
+		]
+
+		{
+			// I'm using the api for the world map, but I need to have the map shown at the beginning be in the location of lake nagambie.
+			var map = new BMapGL.Map('map');
+			map.centerAndZoom(new BMapGL.Point(145.177579, -36.723048), 15);
+			map.enableKeyboard();
+			map.enableScrollWheelZoom();
+			
+			// I use them to provide a convenient way to dynamically manipulate and update the content and style of web pages. In this way, I can manage and control specific parts of a web page more easily.
+			function createDOM() {
+				var dom = document.createElement('a');
+				dom.className = "point"
+				return dom
+			}
+			// Interacting with the mouse scroll allows the user to zoom in and out of the map to view a more detailed or approximate location.
+			var cusLayer = new BMapGL.CustomHtmlLayer(createDOM, {
+				offsetX: 0,
+				offsetY: 0,
+				minZoom: 0,
+				maxZoom: 100,
+				enablePick: true
+			});
+			// Here's how to make each spot appear exactly where they're supposed to be.
+			var mapData = { 
+				"type": "FeatureCollection",
+				"features": [
+					{ 
+						"type": "Feature",
+						"geometry": {
+							"type": "Point",
+							"coordinates": [145.180526, -36.705256]
+						},
+						"properties": {"index": 0}
+					},
+					{ 
+						"type": "Feature",
+						"geometry": {
+							"type": "Point",
+							"coordinates": [145.185485, -36.713125]
+						},
+						"properties": {"index": 1}
+					},
+					{ 
+						"type": "Feature",
+						"geometry": {
+							"type": "Point",
+							"coordinates": [145.169459, -36.717002]
+						},
+						"properties": {"index": 2}
+					},
+					{ 
+						"type": "Feature",
+						"geometry": {
+							"type": "Point",
+							"coordinates": [145.165794, -36.722267]
+						},
+						"properties": {"index": 3}
+					},
+					{ 
+						"type": "Feature",
+						"geometry": {
+							"type": "Point",
+							"coordinates": [145.186634, -36.726664]
+						},
+						"properties": {"index": 4}
+					},
+					{ 
+						"type": "Feature",
+						"geometry": {
+							"type": "Point",
+							"coordinates": [145.185341, -36.729845]
+						},
+						"properties": {"index": 5}
+					},
+					{ 
+						"type": "Feature",
+						"geometry": {
+							"type": "Point",
+							"coordinates": [145.173016, -36.731205]
+						},
+						"properties": {"index": 6}
+					},
+					{ 
+						"type": "Feature",
+						"geometry": {
+							"type": "Point",
+							"coordinates": [145.157565, -36.736642]
+						},
+						"properties": {"index": 7}
+					},
+					{ 
+						"type": "Feature",
+						"geometry": {
+							"type": "Point",
+							"coordinates": [145.174489, -36.738117]
+						},
+						"properties": {"index": 8}
+					}
+				]
+			};
+			// Creating a custom HTML layer using the Baidu Maps API and trying to add some data to this layer.
+			cusLayer.setData(mapData);
+			map.addCustomHtmlLayer(cusLayer);
+			// This code is used to listen for a click event on a custom layer, and when the click event occurs, a sound effect is played, and then a popup window containing detailed information about the object clicked is displayed. (Also explained below)
+			cusLayer.addEventListener('click', function (e) {
+				// Enhance interactivity by making the sound of a fish jumping out of the water for each spot the user clicks on.
+				document.getElementById("clickSound").play()
+				// Enhance interactivity by making relevant fish information appear at every spot the user clicks.
+				const index = e.currentTarget.properties.index
+				$("#popup").show();
+				let contentHtml = ''
+				data[index].forEach(i => {
+					if (contentHtml !== '') contentHtml += `<div class="line"></div>`
+					contentHtml += document.getElementById('c' + i).innerHTML
+				})
+				// Serves the content displayed in the pop-up window after clicking on a spot.
+				$("#popup").html(contentHtml)
+				// Serves the content displayed in the pop-up window after clicking on a spot,mainly the popup window title.
+				coco({
+					title: "Common fish species here and their bag limit",
+					el: "#popup",
+					okText: "close",
+					footer: false,
+					cancelButton: false
+				})
+				// Make the scrollbar automatically scroll to the top when the content of the popup exceeds the screen height.
+				$(".coco-modal-wrapper").scrollTop(0)
+			})
+		}
+
+	</script>
+</body>
+
+</html>
